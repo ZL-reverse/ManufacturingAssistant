@@ -1,0 +1,56 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Net;
+using System.Text;
+
+namespace dmo
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string order="buy", typeId="34" ,page="2";//访问参数
+            string str = GetJitaData(order, typeId, page);//获取数据返回值
+            if(string.Compare(str, "No find data")==0)   //判断是否有数据有则进行存储没有则存储为0；
+            {
+                Console.WriteLine("没有获取数据");
+            }
+            else
+            {
+                var json = JArray.Parse(str);
+                JObject XKadvisory = (JObject)JsonConvert.DeserializeObject(json[0].ToString());
+                Console.WriteLine(XKadvisory);
+            }           
+        }
+        /// <summary>
+        /// 指定Url地址使用Get 方式获取全部字符串
+        /// </summary>
+        /// <param name="url">请求链接地址</param>
+        /// <returns></returns>
+
+        public static String GetJitaData(String order, string typeId,string page)//获取get请求返回值，并检测是否检测到数据
+        {
+            try
+            {
+                string url = string.Format("https://esi.evetech.net/latest/markets/10000002/orders/?datasource=tranquility&order_type={0}&page={1}&type_id={2}", order, page, typeId);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "GET";
+                request.ContentType = "text/html, application/xhtml+xml, */*";
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream rs = response.GetResponseStream();
+                UTF8Encoding t = new UTF8Encoding();
+                StreamReader sr = new StreamReader(rs, t);
+                var result = sr.ReadToEnd();
+                sr.Close();
+                rs.Close();
+                return result;
+            }
+            catch
+            {
+                return "No find data";
+            }
+        }
+    }
+}
