@@ -1,0 +1,58 @@
+class Msql
+    {
+        //private MySqlConnection mysqlConnection_0;
+        public string Login(string User,string Password)//进行数据库登录验证，同样也是本软件的账户验证
+        {
+            string result ="1";
+            MySqlConnection mysqlConnection_0 = mysqlLogin(User, Password);//连接数据库
+                try                         //判断是否连接上数据库
+                {
+                mysqlConnection_0.Open();
+                }
+                catch (Exception ex)  //未连接则现实原因
+                {
+                    result = ex.Message;
+                }
+            mysqlConnection_0.Close();
+            return result;
+            
+        }
+        
+        public  MySqlConnection mysqlLogin(string User, string Password)//进行mysql登录
+        {
+            /*if (this.mysqlConnection_0 != null)
+            {
+                mysqlClose();
+            }*/
+            string str_1 = string.Format("server=localhost;port=3306;user id={0}; password={1}; database={2}; pooling=false; CharSet=utf8", User, Password, "zhizao");
+            MySqlConnection mysqlConnection_0 = new MySqlConnection(str_1);
+            return mysqlConnection_0;
+        }
+        
+        /*public  void mysqlClose()
+        {
+            MySqlConnection mysqlConnection_0.Close();
+        }
+        public  void mysqlOpen()
+        {
+            mysqlConnection_0.Open();
+        }*/
+        public int mysqlUP(string sql, string User, string Password)//数据库更新
+        {
+            MySqlConnection mysqlConnection_0 = mysqlLogin(User, Password);
+            mysqlConnection_0.Open();
+            MySqlCommand mySqlCommand = new MySqlCommand(sql, mysqlConnection_0);
+            int result = mySqlCommand.ExecuteNonQuery();
+            return result;
+        }
+        public  MySqlDataReader mysqlRide(string sql,string User,string Password)//数据库读操作
+        {
+            MySqlConnection mysqlConnection_0 = mysqlLogin(User, Password);
+            mysqlConnection_0.Open();
+            MySqlCommand mySqlCommand = new MySqlCommand(sql, mysqlConnection_0);
+           return mySqlCommand.ExecuteReader();
+        }
+        
+
+
+    }
